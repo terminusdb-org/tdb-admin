@@ -1,0 +1,7 @@
+node_modules
+dist
+*.local
+.env
+playwright-report
+test-results/.last-run.json
+.claude
