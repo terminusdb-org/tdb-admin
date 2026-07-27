@@ -2,18 +2,15 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
     tags:
       - 'v*'
-  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  build-and-publish:
-    name: Build and Publish dist.tar.gz
+  build-and-upload:
+    name: Build and upload dist package
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -37,30 +34,22 @@ jobs:
       - name: Determine release tag
         id: tag
         run: |
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
-            TAG="${GITHUB_REF#refs/tags/}"
-          else
-            TAG="latest"
-          fi
+          TAG="${GITHUB_REF#refs/tags/}"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          # Strip leading 'v' for the filename, e.g. v0.1.1-rc1 → 0.1.1-rc1
+          VERSION="${TAG#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Delete existing release
+      - name: Rename tarball with version
+        run: |
+          mv dist.tar.gz "tdb-admin-${{ steps.tag.outputs.version }}.tar.gz"
+
+      - name: Upload to existing release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release delete "${{ steps.tag.outputs.tag }}" --yes --cleanup-tag 2>/dev/null || true
-
-      - name: Create release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          if [[ "${{ steps.tag.outputs.tag }}" == "latest" ]]; then
-            gh release create latest dist.tar.gz \
-              --title "Latest Build" \
-              --notes "Latest built admin panel dist package. Contains only the built dist/ folder." \
-              --target main
-          else
-            gh release create "${{ steps.tag.outputs.tag }}" dist.tar.gz \
-              --title "Release ${{ steps.tag.outputs.tag }}" \
-              --notes "Admin panel dist package ${{ steps.tag.outputs.tag }}. Contains only the built dist/ folder."
-          fi
+          # The release (with immutable tag) was created manually on GitHub.
+          # This step builds the dist and uploads it as a release asset.
+          gh release upload "${{ steps.tag.outputs.tag }}" \
+            "tdb-admin-${{ steps.tag.outputs.version }}.tar.gz" \
+            --clobber
