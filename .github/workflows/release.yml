@@ -44,12 +44,11 @@ jobs:
           fi
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
-      - name: Delete existing latest release
-        if: steps.tag.outputs.tag == 'latest'
+      - name: Delete existing release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release delete latest --yes --cleanup-tag 2>/dev/null || true
+          gh release delete "${{ steps.tag.outputs.tag }}" --yes --cleanup-tag 2>/dev/null || true
 
       - name: Create release
         env:
