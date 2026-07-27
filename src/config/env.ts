@@ -83,10 +83,10 @@ function getEnvVar(name: keyof RuntimeEnv): string | undefined {
     }
   }
 
-  // Build-time fallback (Vite's import.meta.env), also filtering PLACEHOLDERs
+  // Build-time fallback (Vite's import.meta.env), also filtering PLACEHOLDERs.
+  // Empty string is a valid value here too (e.g. VITE_TDB_URL="" for same-origin).
   const buildValue = import.meta.env[name];
-  if (typeof buildValue === "string" && buildValue.length > 0
-      && !buildValue.includes("PLACEHOLDER")) {
+  if (typeof buildValue === "string" && !buildValue.includes("PLACEHOLDER")) {
     return buildValue;
   }
   return undefined;

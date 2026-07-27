@@ -93,6 +93,6 @@ const baseQueryWithReauth: BaseQueryFn<
 export const baseApi = createApi({
   reducerPath: "tdbApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["User", "Organization", "Role", "Capability", "Database", "Branch"],
+  tagTypes: ["User", "Organization", "Role", "Capability", "Database", "Branch", "Clustering"],
   endpoints: () => ({}),
 });

@@ -2,7 +2,6 @@
   "include": ["src"],
   "exclude": ["node_modules"],
   "compilerOptions": {
-    "baseUrl": "src",
     "target": "es2022",
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "module": "esnext",
@@ -21,7 +20,7 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
-      "@/*": ["*"]
+      "@/*": ["./src/*"]
     }
   }
 }

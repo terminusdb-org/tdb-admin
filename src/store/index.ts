@@ -145,3 +145,31 @@ export type {
   MediationHealthResponse,
   DependencyHealth,
 } from "./api/mediationApi";
+
+// --- Indexer API hooks + types ---
+export {
+  useGetIndexStatusQuery,
+  useTriggerIndexMutation,
+  useDeleteIndexMutation,
+} from "./api/indexerApi";
+export type {
+  IndexStatus,
+  BranchProcessing,
+  IndexEngine,
+  IndexTriggerResponse,
+  GetIndexStatusRequest,
+  TriggerIndexRequest,
+  DeleteIndexRequest,
+} from "./api/indexerApi";
+
+// --- Clustering API hooks + types ---
+export {
+  useGetClusteringQuery,
+  useToggleClusteringMutation,
+} from "./api/clusteringApi";
+export type {
+  ToggleClusteringRequest,
+  ToggleClusteringResponse,
+  GetClusteringRequest,
+  GetClusteringResponse,
+} from "./api/clusteringApi";
