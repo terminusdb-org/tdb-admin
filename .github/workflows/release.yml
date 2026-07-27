@@ -1,0 +1,67 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-publish:
+    name: Build and Publish dist.tar.gz
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build and package
+        run: npm run package
+        env:
+          VITE_TDB_URL: __TDB_URL_PLACEHOLDER__
+          VITE_TDB_USER: admin
+
+      - name: Determine release tag
+        id: tag
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            TAG="${GITHUB_REF#refs/tags/}"
+          else
+            TAG="latest"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Delete existing latest release
+        if: steps.tag.outputs.tag == 'latest'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete latest --yes --cleanup-tag 2>/dev/null || true
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [[ "${{ steps.tag.outputs.tag }}" == "latest" ]]; then
+            gh release create latest dist.tar.gz \
+              --title "Latest Build" \
+              --notes "Latest built admin panel dist package. Contains only the built dist/ folder." \
+              --target main
+          else
+            gh release create "${{ steps.tag.outputs.tag }}" dist.tar.gz \
+              --title "Release ${{ steps.tag.outputs.tag }}" \
+              --notes "Admin panel dist package ${{ steps.tag.outputs.tag }}. Contains only the built dist/ folder."
+          fi
