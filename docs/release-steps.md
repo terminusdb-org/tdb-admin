@@ -7,7 +7,7 @@ Releases are drafted by a GitHub Actions workflow, then published manually after
 1. **Dispatch the workflow**
    - Go to [Actions → Release](https://github.com/terminusdb-org/tdb-admin/actions/workflows/release.yml)
    - Click "Run workflow"
-   - Enter the version tag, e.g. `v0.1.1-rc1`
+   - Enter the version tag for the draft, e.g. `v0.1.1-rc1`
    - Click "Run workflow"
 
 2. **The workflow builds and drafts**
