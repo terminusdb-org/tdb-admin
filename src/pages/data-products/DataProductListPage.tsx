@@ -20,6 +20,7 @@ import {
   LoadingState,
 } from "@/components/shared";
 import { isConflictError, extractApiMessage } from "@/utils/extractErrorStatus";
+import { config } from "@/config";
 
 const DB_NAME_PATTERN = /^[a-zA-Z0-9._-]{1,128}$/;
 
@@ -76,13 +77,26 @@ const OrgDatabaseSection: React.FC<{
       key: "name",
       header: "Name",
       render: (db: TdbDatabase) => (
-        <button
-          type="button"
-          onClick={() => onNavigate(org.name, db)}
-          className="font-medium text-dfrntBlue-600 hover:text-dfrntBlue-800 hover:underline transition-colors"
-        >
-          {db.name}
-        </button>
+        <span className="inline-flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => onNavigate(org.name, db)}
+            className="font-medium text-dfrntBlue-600 hover:text-dfrntBlue-800 hover:underline transition-colors"
+          >
+            {db.name}
+          </button>
+          {/* tdb-data mounts alongside this app (/app/admin → /app/data) */}
+          <a
+            href={`${config.basePath.replace(/\/[^/]*$/, "")}/data/${encodeURIComponent(org.name)}/${encodeURIComponent(db.name)}/local/branch/main`}
+            className="text-gray-400 transition-colors hover:text-dfrntBlue-600"
+            title="Open in Data Explorer"
+            aria-label={`Open ${org.name}/${db.name} in Data Explorer`}
+          >
+            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5} aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-4.5-7.5H21m0 0v7.5m0-7.5L10.5 13.5" />
+            </svg>
+          </a>
+        </span>
       ),
     },
     {

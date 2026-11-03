@@ -8,6 +8,7 @@ import {
   useDeleteBranchMutation,
 } from "@/store";
 import type { TdbBranch } from "@/store";
+import { config } from "@/config";
 import {
   DataTable,
   ConfirmModal,
@@ -37,7 +38,7 @@ type ModalState =
  * - Lists all branches with "main" badge on default branch
  * - Create Branch button opens form (name + source branch dropdown)
  * - Delete button on each non-main branch with confirmation
- * - Clicking a branch row navigates to schema editor for that branch
+ * - Clicking a branch name opens it in the data explorer (tdb-data)
  */
 export const BranchListPage: React.FC = () => {
   const { org, db } = useParams<{ org: string; db: string }>();
@@ -207,9 +208,13 @@ export const BranchListPage: React.FC = () => {
       header: "Branch",
       render: (branch: TdbBranch) => (
         <span className="flex items-center gap-2">
-          <span className="font-medium text-gray-900">
+          {/* tdb-data mounts alongside this app (/app/admin → /app/data) */}
+          <a
+            href={`${config.basePath.replace(/\/[^/]*$/, "")}/data/${encodeURIComponent(org)}/${encodeURIComponent(db)}/local/branch/${encodeURIComponent(branch.name)}`}
+            className="font-medium text-dfrntBlue-600 hover:text-dfrntBlue-800 hover:underline transition-colors"
+          >
             {branch.name}
-          </span>
+          </a>
           {branch.name === DEFAULT_BRANCH && (
             <Badge label="default" variant="info" />
           )}
