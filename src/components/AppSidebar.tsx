@@ -345,6 +345,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ onNavigate }) => {
             Sign out
           </button>
         </div>
+        <div className="mt-2 text-xs text-gray-400">{config.appVersion}</div>
       </div>
     </nav>
   );

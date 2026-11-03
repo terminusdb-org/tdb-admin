@@ -293,4 +293,24 @@ describe("buildConfig", () => {
       expect(result.authMode).toBe("basic");
     });
   });
+
+  describe("appVersion", () => {
+    const env = {
+      authMode: "basic",
+      tdbUrl: "http://localhost:6363",
+      tdbUser: undefined,
+      devToken: undefined,
+      apiUrl: undefined,
+      openBaoEnabled: undefined,
+      basePath: undefined,
+    };
+
+    it("defaults to dev when unset", () => {
+      expect(buildConfig(env).appVersion).toBe("dev");
+    });
+
+    it("carries the release tag baked at build time", () => {
+      expect(buildConfig({ ...env, appVersion: "v0.1.2" }).appVersion).toBe("v0.1.2");
+    });
+  });
 });
