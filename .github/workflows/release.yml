@@ -27,12 +27,6 @@ jobs:
       - name: Install dependencies
         run: npm ci --ignore-scripts
 
-      - name: Build and package
-        run: npm run package
-        env:
-          VITE_TDB_URL: __TDB_URL_PLACEHOLDER__
-          VITE_TDB_USER: admin
-
       - name: Determine version
         id: ver
         run: |
@@ -42,6 +36,14 @@ jobs:
           VERSION="${TAG#v}"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Build and package
+        run: npm run package
+        env:
+          VITE_TDB_URL: __TDB_URL_PLACEHOLDER__
+          VITE_TDB_USER: admin
+          # Baked into the bundle so the UI can display the running version.
+          VITE_APP_VERSION: ${{ steps.ver.outputs.tag }}
 
       - name: Rename tarball with version
         run: |

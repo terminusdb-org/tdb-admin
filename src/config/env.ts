@@ -55,9 +55,15 @@ interface AppConfig {
    * Injected at runtime via window.__ENV__.VITE_BASE_PATH or at build time via Vite base.
    */
   readonly basePath: string;
+  /**
+   * UI package version, baked at release-build time by the release workflow
+   * (the release tag, e.g. "v0.1.2"). "dev" for local builds.
+   */
+  readonly appVersion: string;
 }
 
 interface RuntimeEnv {
+  readonly VITE_APP_VERSION?: string;
   readonly VITE_TDB_URL?: string;
   readonly VITE_TDB_USER?: string;
   readonly VITE_AUTH_MODE?: string;
@@ -109,6 +115,7 @@ export function buildConfig(env: {
   apiUrl: string | undefined;
   openBaoEnabled: string | undefined;
   basePath: string | undefined;
+  appVersion?: string;
 }): AppConfig {
   const authMode = parseAuthMode(env.authMode);
   const tdbUser = typeof env.tdbUser === "string" && env.tdbUser.length > 0
@@ -124,6 +131,7 @@ export function buildConfig(env: {
     : import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
   const edition: Edition = authMode === "proxy" ? "Enterprise" : "Community";
+  const appVersion = env.appVersion ?? "dev";
 
   if (authMode === "proxy") {
     // In proxy mode, API calls go through oauth2-proxy → mediation layer (dfrnt-api).
@@ -131,7 +139,7 @@ export function buildConfig(env: {
     const apiUrl = typeof env.apiUrl === "string" && env.apiUrl.length > 0
       ? env.apiUrl.replace(/\/$/, "")
       : "/api/v1/admin";
-    return { apiUrl, authMode, edition, tdbUser, devToken, openBaoEnabled, basePath };
+    return { apiUrl, authMode, edition, tdbUser, devToken, openBaoEnabled, basePath, appVersion };
   }
 
   // Basic mode: direct TDB access (M3 standalone / Community edition)
@@ -151,6 +159,7 @@ export function buildConfig(env: {
     devToken: null,
     openBaoEnabled,
     basePath,
+    appVersion,
   };
 }
 
@@ -163,6 +172,7 @@ function loadConfig(): AppConfig {
     apiUrl: getEnvVar("VITE_API_URL"),
     openBaoEnabled: getEnvVar("VITE_OPENBAO_ENABLED"),
     basePath: getEnvVar("VITE_BASE_PATH"),
+    appVersion: getEnvVar("VITE_APP_VERSION"),
   });
 }
 
